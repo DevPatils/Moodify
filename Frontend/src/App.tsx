@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import LoginButton from "./components/LoginButton";
+import PromptPage from "./pages/Prompt";
 
 const App: React.FC = () => {
   const [token, setToken] = useState<string | null>(null);
@@ -27,6 +28,7 @@ const App: React.FC = () => {
       ) : (
         <p className="text-xl">✅ Logged in with Spotify!</p>
       )}
+      <PromptPage/>
     </div>
   );
 };
