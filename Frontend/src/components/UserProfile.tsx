@@ -1,11 +1,15 @@
-import React from 'react';
+// UserProfile.tsx
+import React from "react";
 
-interface UserProfileProps {
+export interface UserProfileProps {
   name?: string;
   image?: string;
 }
 
-const UserProfile: React.FC<UserProfileProps> = ({ name = "Dev Patil", image }) =>
+const UserProfile: React.FC<UserProfileProps> = ({
+  name = "Dev Patil23",
+  image,
+}) => (
   <div className="flex items-center p-4 mb-6 bg-gray-800 rounded-lg">
     <img
       src={image || "https://via.placeholder.com/40"}
@@ -13,6 +17,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ name = "Dev Patil", image }) 
       className="w-10 h-10 rounded-full mr-3"
     />
     <span className="font-bold">{name}</span>
-  </div>;
+  </div>
+);
 
 export default UserProfile;
