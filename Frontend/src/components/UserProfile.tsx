@@ -7,7 +7,7 @@ export interface UserProfileProps {
 }
 
 const UserProfile: React.FC<UserProfileProps> = ({
-  name = "Dev Patil23",
+  name = "Please log in",
   image,
 }) => (
   <div className="flex items-center p-4 mb-6 bg-gray-800 rounded-lg">
