@@ -2,17 +2,17 @@ import express from "express";
 import { config } from "../config.js";
 import { getAccessToken, getUserProfile } from "../services/spotify.js";
 
-const router = express.Router();
+const Authrouter = express.Router();
 
 // Step 1: Redirect to Spotify
-router.get("/login", (req, res) => {
+Authrouter.get("/login", (req, res) => {
   const scope = "user-read-private user-read-email playlist-modify-public playlist-modify-private";
   const authUrl = `https://accounts.spotify.com/authorize?client_id=${config.clientId}&response_type=code&redirect_uri=${encodeURIComponent(config.redirectUri)}&scope=${encodeURIComponent(scope)}`;
   res.redirect(authUrl);
 });
 
 // Step 2: Callback
-router.get("/callback", async (req, res) => {
+Authrouter.get("/callback", async (req, res) => {
   try {
     const code = req.query.code || null;
     const tokenData = await getAccessToken(code);
@@ -27,4 +27,4 @@ router.get("/callback", async (req, res) => {
   }
 });
 
-export default router;
+export default Authrouter;
