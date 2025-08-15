@@ -84,14 +84,22 @@ AIrouter.post("/generateKeywords", async (req, res) => {
     }
 
     const spotifyData = await spotifyRes.json();
-    const trackIds = spotifyData.tracks.items.map(track => track.id);
+
+    // Map track details
+    const tracks = spotifyData.tracks.items.map(track => ({
+      id: track.id,
+      name: track.name,
+      artist: track.artists[0]?.name || "Unknown Artist",
+      url: track.external_urls.spotify,
+      preview_url: track.preview_url
+    }));
 
     // -----------------------------
     // 3️⃣ Send combined response
     // -----------------------------
     res.json({
       ...jsonResponse, // genres, keywords, energy
-      trackIds
+      tracks
     });
 
   } catch (error) {
@@ -99,6 +107,5 @@ AIrouter.post("/generateKeywords", async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 });
-
 
 export default AIrouter;
