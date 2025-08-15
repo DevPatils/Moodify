@@ -3,8 +3,7 @@ import fetch from "node-fetch";
 
 const AIrouter = express.Router();
 
-// POST /ai/generateKeywords
-AIrouter.post("/generateKeywords", async (req, res) => {
+AIrouter.post("/generatePlaylist", async (req, res) => {
   const { mood } = req.body;
   const spotifyToken = req.headers["authorization"]; // Expecting: "Bearer <token>"
 
@@ -18,7 +17,7 @@ AIrouter.post("/generateKeywords", async (req, res) => {
 
   try {
     // -----------------------------
-    // 1️⃣ Send prompt to Gemini
+    // 1️⃣ Get genres/keywords from Gemini
     // -----------------------------
     const prompt = `
       Given the following mood description:
@@ -52,10 +51,7 @@ AIrouter.post("/generateKeywords", async (req, res) => {
       jsonResponse = JSON.parse(text);
     } catch (parseErr) {
       console.error("Failed to parse Gemini JSON:", parseErr, "Raw text:", text);
-      return res.status(500).json({
-        error: "Invalid JSON returned from Gemini",
-        raw: text
-      });
+      return res.status(500).json({ error: "Invalid JSON from Gemini", raw: text });
     }
 
     const { genres, keywords } = jsonResponse;
@@ -65,15 +61,13 @@ AIrouter.post("/generateKeywords", async (req, res) => {
     }
 
     // -----------------------------
-    // 2️⃣ Query Spotify for tracks
+    // 2️⃣ Search Spotify tracks
     // -----------------------------
     const searchTerms = [...(genres || []), ...(keywords || [])].join(" ");
     const spotifyRes = await fetch(
       `https://api.spotify.com/v1/search?q=${encodeURIComponent(searchTerms)}&type=track&limit=10`,
       {
-        headers: {
-          Authorization: spotifyToken
-        }
+        headers: { Authorization: spotifyToken }
       }
     );
 
@@ -84,8 +78,6 @@ AIrouter.post("/generateKeywords", async (req, res) => {
     }
 
     const spotifyData = await spotifyRes.json();
-
-    // Map track details
     const tracks = spotifyData.tracks.items.map(track => ({
       id: track.id,
       name: track.name,
@@ -94,16 +86,82 @@ AIrouter.post("/generateKeywords", async (req, res) => {
       preview_url: track.preview_url
     }));
 
+    const trackUris = tracks.map(t => `spotify:track:${t.id}`);
+
     // -----------------------------
-    // 3️⃣ Send combined response
+    // 3️⃣ Get current user profile
+    // -----------------------------
+    const userRes = await fetch(`https://api.spotify.com/v1/me`, {
+      headers: { Authorization: spotifyToken }
+    });
+
+    if (!userRes.ok) {
+      const errText = await userRes.text();
+      console.error("Spotify /me error:", errText);
+      return res.status(userRes.status).json({ error: "Failed to get user profile", details: errText });
+    }
+
+    const userData = await userRes.json();
+    const userId = userData.id;
+
+    // -----------------------------
+    // 4️⃣ Create a new playlist
+    // -----------------------------
+    const playlistRes = await fetch(`https://api.spotify.com/v1/users/${userId}/playlists`, {
+      method: "POST",
+      headers: {
+        Authorization: spotifyToken,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        name: `Moodify: ${mood}`,
+        description: `A playlist generated for mood: ${mood}`,
+        public: false
+      })
+    });
+
+    if (!playlistRes.ok) {
+      const errText = await playlistRes.text();
+      console.error("Playlist creation error:", errText);
+      return res.status(playlistRes.status).json({ error: "Failed to create playlist", details: errText });
+    }
+
+    const playlistData = await playlistRes.json();
+    const playlistId = playlistData.id;
+
+    // -----------------------------
+    // 5️⃣ Add tracks to playlist
+    // -----------------------------
+    const addTracksRes = await fetch(`https://api.spotify.com/v1/playlists/${playlistId}/tracks`, {
+      method: "POST",
+      headers: {
+        Authorization: spotifyToken,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ uris: trackUris })
+    });
+
+    if (!addTracksRes.ok) {
+      const errText = await addTracksRes.text();
+      console.error("Add tracks error:", errText);
+      return res.status(addTracksRes.status).json({ error: "Failed to add tracks", details: errText });
+    }
+
+    // -----------------------------
+    // ✅ Response
     // -----------------------------
     res.json({
-      ...jsonResponse, // genres, keywords, energy
+      ...jsonResponse,
+      playlist: {
+        id: playlistId,
+        name: playlistData.name,
+        url: playlistData.external_urls.spotify
+      },
       tracks
     });
 
   } catch (error) {
-    console.error("Error generating keywords or fetching Spotify data:", error);
+    console.error("Error generating playlist:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 });
