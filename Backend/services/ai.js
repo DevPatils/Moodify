@@ -58,21 +58,21 @@ AIrouter.post("/generateKeywords", async (req, res) => {
       });
     }
 
-    const { genres } = jsonResponse;
+    const { genres, keywords } = jsonResponse;
 
-    if (!genres || genres.length === 0) {
-      return res.status(400).json({ error: "No genres returned from Gemini" });
+    if ((!genres || genres.length === 0) && (!keywords || keywords.length === 0)) {
+      return res.status(400).json({ error: "No genres or keywords returned from Gemini" });
     }
 
     // -----------------------------
     // 2️⃣ Query Spotify for tracks
     // -----------------------------
-    const spotifyQuery = genres.join(" ");
+    const searchTerms = [...(genres || []), ...(keywords || [])].join(" ");
     const spotifyRes = await fetch(
-      `https://api.spotify.com/v1/search?q=${encodeURIComponent(spotifyQuery)}&type=track&limit=10`,
+      `https://api.spotify.com/v1/search?q=${encodeURIComponent(searchTerms)}&type=track&limit=10`,
       {
         headers: {
-          Authorization: spotifyToken // Directly pass the token from request header
+          Authorization: spotifyToken
         }
       }
     );
