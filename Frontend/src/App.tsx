@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import LoginButton from "./components/LoginButton";
 import PromptPage from "./pages/Prompt";
-
+import { PlaylistProvider } from "./context/PlayListContext";
 const App: React.FC = () => {
   const [token, setToken] = useState<string | null>(null);
 
@@ -22,6 +22,7 @@ const App: React.FC = () => {
   }, []);
 
   return (
+    <PlaylistProvider>
     <div className="flex flex-col items-center justify-center h-screen bg-gray-900 text-white">
       {!token ? (
         <LoginButton />
@@ -30,6 +31,7 @@ const App: React.FC = () => {
       )}
       <PromptPage/>
     </div>
+    </PlaylistProvider>
   );
 };
 
