@@ -1,63 +1,123 @@
-import React, { useState } from "react";
-import axios from "axios";
+import { useState } from "react";
 
-const MoodInput: React.FC = () => {
+type Track = {
+  id: string;
+  name: string;
+  artist: string;
+  preview_url?: string;
+};
+
+type PlaylistData = {
+  playlist: {
+    url: string;
+    name: string;
+  };
+  tracks: Track[];
+};
+
+export default function Moodify() {
   const [mood, setMood] = useState("");
   const [loading, setLoading] = useState(false);
-  type ResultType = {
-    keywords?: string[];
-    [key: string]: unknown;
-  };
-  const [result, setResult] = useState<ResultType | null>(null);
+  const [playlist, setPlaylist] = useState<PlaylistData | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!mood.trim()) return;
+  const handleGenerate = async () => {
+    const token = localStorage.getItem("spotify_token");
+
+    if (!token) {
+      setError("No Spotify token found in localStorage. Please log in.");
+      return;
+    }
 
     setLoading(true);
-    setResult(null);
+    setError(null);
+    setPlaylist(null);
 
     try {
-      const res = await axios.post("http://127.0.0.1:5000/ai/generateKeywords", { mood });
-      setResult(res.data);
-    } catch (error) {
-      console.error("Error generating keywords:", error);
-      alert("Something went wrong. Check console for details.");
+      const res = await fetch("http://localhost:5000/ai/generatePlaylist", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({ mood })
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Something went wrong");
+
+      setPlaylist(data);
+    } catch (err) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("An unknown error occurred");
+      }
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="max-w-2xl mx-auto mt-20">
-      <form
-        onSubmit={handleSubmit}
-        className="flex items-center p-4 bg-gray-800 rounded-lg"
-      >
+    <div className="min-h-screen flex flex-col items-center justify-center bg-yellow-100 text-black p-6">
+      <h1 className="text-4xl font-bold mb-6 bg-black text-white px-4 py-2 rounded-xl border-4 border-black">
+        🎵 Moodify
+      </h1>
+
+      <div className="flex gap-2 mb-6">
         <input
           type="text"
+          placeholder="Enter your mood..."
           value={mood}
           onChange={(e) => setMood(e.target.value)}
-          placeholder="How are you feeling today? e.g., 'Feeling nostalgic about my college days...'"
-          className="flex-1 p-2 bg-gray-700 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+          className="px-4 py-2 border-4 border-black rounded-xl bg-white text-black w-80"
         />
         <button
-          type="submit"
+          onClick={handleGenerate}
           disabled={loading}
-          className="px-4 py-2 bg-orange-500 text-white rounded-r-lg hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-500 disabled:opacity-50"
+          className="px-4 py-2 bg-pink-400 border-4 border-black rounded-xl font-bold shadow-lg hover:bg-pink-300 disabled:opacity-50"
         >
           {loading ? "Generating..." : "Generate"}
         </button>
-      </form>
+      </div>
 
-      {result && (
-        <div className="mt-6 p-4 bg-gray-900 rounded-lg text-white">
-          <h2 className="text-lg font-bold mb-2">AI Mood Analysis</h2>
-          <pre className="text-sm">{JSON.stringify(result, null, 2)}</pre>
+      {error && (
+        <div className="bg-red-300 border-4 border-black px-4 py-2 rounded-xl mb-4">
+          ❌ {error}
+        </div>
+      )}
+
+      {playlist && (
+        <div className="bg-white border-4 border-black rounded-xl p-6 shadow-lg w-full max-w-lg">
+          <h2 className="text-2xl font-bold mb-2">Playlist Created 🎉</h2>
+          <a
+            href={playlist.playlist.url}
+            target="_blank"
+            rel="noreferrer"
+            className="text-blue-600 underline"
+          >
+            {playlist.playlist.name}
+          </a>
+
+          <h3 className="mt-4 mb-2 font-bold">Tracks:</h3>
+          <ul className="space-y-2">
+            {playlist.tracks.map((track) => (
+              <li
+                key={track.id}
+                className="border-2 border-black rounded-lg px-3 py-2 bg-yellow-200"
+              >
+                <p className="font-semibold">{track.name}</p>
+                <p className="text-sm">by {track.artist}</p>
+                {track.preview_url && (
+                  <audio controls className="mt-2 w-full">
+                    <source src={track.preview_url} type="audio/mpeg" />
+                  </audio>
+                )}
+              </li>
+            ))}
+          </ul>
         </div>
       )}
     </div>
   );
-};
-
-export default MoodInput;
+}
