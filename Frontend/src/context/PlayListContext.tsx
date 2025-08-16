@@ -8,6 +8,7 @@ export type Track = {
   previewUrl?: string;
   spotifyUrl: string;
   albumArt?: string; // optional for UI thumbnails
+  url : string;
 };
 
 // Playlist model
@@ -49,8 +50,10 @@ export const PlaylistProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   );
 };
 
+/* eslint-disable react-refresh/only-export-components */
 export const usePlaylists = () => {
   const context = useContext(PlaylistContext);
   if (!context) throw new Error("usePlaylists must be used inside PlaylistProvider");
   return context;
 };
+
