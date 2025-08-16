@@ -38,9 +38,9 @@ export default function Moodify() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ mood })
+        body: JSON.stringify({ mood }),
       });
 
       const data = await res.json();
@@ -59,65 +59,66 @@ export default function Moodify() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-yellow-100 text-black p-6">
-      <h1 className="text-4xl font-bold mb-6 bg-black text-white px-4 py-2 rounded-xl border-4 border-black">
-        🎵 Moodify
-      </h1>
+    <div className="flex h-screen bg-black text-white items-center justify-center">
+      {/* Main Content */}
+      <div className="p-10 flex flex-col items-center justify-center w-full max-w-2xl">
+        <h1 className="text-4xl font-bold mb-6">Generate a Playlist 🎶</h1>
 
-      <div className="flex gap-2 mb-6">
-        <input
-          type="text"
-          placeholder="Enter your mood..."
-          value={mood}
-          onChange={(e) => setMood(e.target.value)}
-          className="px-4 py-2 border-4 border-black rounded-xl bg-white text-black w-80"
-        />
-        <button
-          onClick={handleGenerate}
-          disabled={loading}
-          className="px-4 py-2 bg-pink-400 border-4 border-black rounded-xl font-bold shadow-lg hover:bg-pink-300 disabled:opacity-50"
-        >
-          {loading ? "Generating..." : "Generate"}
-        </button>
-      </div>
-
-      {error && (
-        <div className="bg-red-300 border-4 border-black px-4 py-2 rounded-xl mb-4">
-          ❌ {error}
-        </div>
-      )}
-
-      {playlist && (
-        <div className="bg-white border-4 border-black rounded-xl p-6 shadow-lg w-full max-w-lg">
-          <h2 className="text-2xl font-bold mb-2">Playlist Created 🎉</h2>
-          <a
-            href={playlist.playlist.url}
-            target="_blank"
-            rel="noreferrer"
-            className="text-blue-600 underline"
+        <div className="flex gap-2 mb-6 w-full max-w-md">
+          <input
+            type="text"
+            placeholder="Enter your mood..."
+            value={mood}
+            onChange={(e) => setMood(e.target.value)}
+            className="px-4 py-2 rounded-lg flex-1 bg-gray-900 border border-gray-700 text-white focus:outline-none"
+          />
+          <button
+            onClick={handleGenerate}
+            disabled={loading}
+            className="px-4 py-2 bg-green-500 rounded-lg font-bold hover:bg-green-400 disabled:opacity-50"
           >
-            {playlist.playlist.name}
-          </a>
-
-          <h3 className="mt-4 mb-2 font-bold">Tracks:</h3>
-          <ul className="space-y-2">
-            {playlist.tracks.map((track) => (
-              <li
-                key={track.id}
-                className="border-2 border-black rounded-lg px-3 py-2 bg-yellow-200"
-              >
-                <p className="font-semibold">{track.name}</p>
-                <p className="text-sm">by {track.artist}</p>
-                {track.preview_url && (
-                  <audio controls className="mt-2 w-full">
-                    <source src={track.preview_url} type="audio/mpeg" />
-                  </audio>
-                )}
-              </li>
-            ))}
-          </ul>
+            {loading ? "Generating..." : "Generate"}
+          </button>
         </div>
-      )}
+
+        {error && (
+          <div className="bg-red-500 text-white px-4 py-2 rounded mb-4">
+            ❌ {error}
+          </div>
+        )}
+
+        {playlist && (
+          <div className="bg-gray-900 border border-gray-700 rounded-lg p-6 shadow-lg w-full max-w-lg">
+            <h2 className="text-2xl font-bold mb-2">Playlist Created 🎉</h2>
+            <a
+              href={playlist.playlist.url}
+              target="_blank"
+              rel="noreferrer"
+              className="text-green-400 underline"
+            >
+              {playlist.playlist.name}
+            </a>
+
+            <h3 className="mt-4 mb-2 font-bold">Tracks:</h3>
+            <ul className="space-y-2">
+              {playlist.tracks.map((track) => (
+                <li
+                  key={track.id}
+                  className="border border-gray-700 rounded px-3 py-2 bg-gray-800"
+                >
+                  <p className="font-semibold">{track.name}</p>
+                  <p className="text-sm text-gray-400">by {track.artist}</p>
+                  {track.preview_url && (
+                    <audio controls className="mt-2 w-full">
+                      <source src={track.preview_url} type="audio/mpeg" />
+                    </audio>
+                  )}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
