@@ -8,7 +8,7 @@ export type Track = {
   previewUrl?: string;
   spotifyUrl: string;
   albumArt?: string; // optional for UI thumbnails
-  url : string;
+  url: string;
 };
 
 // Playlist model
@@ -24,15 +24,20 @@ interface PlaylistContextType {
   addPlaylist: (playlist: Playlist) => void;
   clearPlaylists: () => void;
   getPlaylist: (id: string) => Playlist | undefined;
+  replacePlaylists: (newPlaylists: Playlist[]) => void;
 }
 
-const PlaylistContext = createContext<PlaylistContextType | undefined>(undefined);
+const PlaylistContext = createContext<PlaylistContextType | undefined>(
+  undefined
+);
 
-export const PlaylistProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const PlaylistProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   const [playlists, setPlaylists] = useState<Playlist[]>([]);
 
   const addPlaylist = (playlist: Playlist) => {
-    setPlaylists((prev) => [...prev, playlist]);
+    setPlaylists((prev) => [...prev, { ...playlist }]); // clone to force re-render
   };
 
   const clearPlaylists = () => {
@@ -43,8 +48,15 @@ export const PlaylistProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     return playlists.find((pl) => pl.id === id);
   };
 
+  const replacePlaylists = (newPlaylists: Playlist[]) => {
+    // clone newPlaylists to avoid reference issues
+    setPlaylists(newPlaylists.map((pl) => ({ ...pl })));
+  };
+
   return (
-    <PlaylistContext.Provider value={{ playlists, addPlaylist, clearPlaylists, getPlaylist }}>
+    <PlaylistContext.Provider
+      value={{ playlists, addPlaylist, clearPlaylists, getPlaylist, replacePlaylists }}
+    >
       {children}
     </PlaylistContext.Provider>
   );
@@ -56,4 +68,3 @@ export const usePlaylists = () => {
   if (!context) throw new Error("usePlaylists must be used inside PlaylistProvider");
   return context;
 };
-

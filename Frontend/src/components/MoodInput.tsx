@@ -6,12 +6,17 @@ export default function Moodify() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const { addPlaylist } = usePlaylists();
+  const { replacePlaylists } = usePlaylists();
 
   const handleGenerate = async () => {
     const token = localStorage.getItem("spotify_token");
     if (!token) {
       setError("No Spotify token found in localStorage. Please log in.");
+      return;
+    }
+
+    if (!mood.trim()) {
+      setError("Please enter a mood first.");
       return;
     }
 
@@ -31,16 +36,20 @@ export default function Moodify() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Something went wrong");
 
-      // ✅ Save in global state
-      addPlaylist({
-        id: Date.now().toString(),
-        name: data.playlist.name,
-        url: data.playlist.url,
-        tracks: data.tracks,
-      });
+      // ✅ Replace global playlists with the new one
+      replacePlaylists([
+        {
+          id: crypto.randomUUID(),
+          name: data.playlist.name,
+          url: data.playlist.url,
+          tracks: data.tracks || [],
+        },
+      ]);
+
+      // clear mood input
+      setMood("");
     } catch (err) {
-      if (err instanceof Error) setError(err.message);
-      else setError("An unknown error occurred");
+      setError(err instanceof Error ? err.message : "An unknown error occurred");
     } finally {
       setLoading(false);
     }
@@ -56,6 +65,7 @@ export default function Moodify() {
           value={mood}
           onChange={(e) => setMood(e.target.value)}
           className="px-4 py-2 rounded-lg flex-1 bg-gray-900 border border-gray-700 text-white"
+          disabled={loading}
         />
         <button
           onClick={handleGenerate}
@@ -65,7 +75,9 @@ export default function Moodify() {
           {loading ? "Generating..." : "Generate"}
         </button>
       </div>
-      {error && <div className="bg-red-500 px-4 py-2 rounded">{error}</div>}
+      {error && (
+        <div className="bg-red-500 px-4 py-2 rounded text-white">{error}</div>
+      )}
     </div>
   );
 }
