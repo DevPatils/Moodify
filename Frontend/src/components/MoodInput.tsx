@@ -109,7 +109,7 @@ const base = import.meta.env.VITE_BASE_URL;
 
                 <div className="flex w-full md:w-auto flex-col md:flex-row gap-2 mt-3 md:mt-0">
                   <a href={popupPlaylist.url} target="_blank" rel="noreferrer" className="w-full md:w-auto px-3 py-2 btn-accent rounded-full text-sm text-center">Open</a>
-                  <button aria-label={copied ? 'Copied' : 'Copy link'} title={copied ? 'Copied' : 'Copy link'} className="w-full md:w-auto px-3 py-2 bg-gray-800 rounded-full text-sm flex items-center justify-center" onClick={async () => {
+                  <button aria-label={copied ? 'Copied' : 'Copy link'} title={copied ? 'Copied' : 'Copy link'} className="hidden md:inline-flex md:w-auto px-3 py-2 bg-gray-800 rounded-full text-sm items-center justify-center" onClick={async () => {
                     try {
                       await navigator.clipboard?.writeText(popupPlaylist.url || '');
                       setCopied(true);
