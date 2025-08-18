@@ -1,6 +1,6 @@
 @import "tailwindcss";
 
-@theme {
+:root {
   --color-ebonyclay: #25273A;
   --color-brand: #00C853; /* you can add more */
 }
