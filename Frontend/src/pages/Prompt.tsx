@@ -16,8 +16,8 @@ const PromptPage: React.FC = () => {
 
       {/* Mobile top bar with hamburger */}
       <div className="md:hidden fixed top-4 left-4 z-40">
-        <button aria-label="Open sidebar" onClick={() => setDrawerOpen(true)} className="p-3 rounded-md bg-gray-900/60 backdrop-blur-sm drop-shadow-md">
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <button aria-label="Open sidebar" onClick={() => setDrawerOpen(true)} className="p-1 rounded-md bg-gray-900/60 backdrop-blur-sm drop-shadow-md">
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
           </svg>
         </button>
@@ -44,7 +44,7 @@ const PromptPage: React.FC = () => {
               <div className="w-full max-w-3xl py-3 px-4 rounded-md bg-yellow-900/10 border border-yellow-800 text-yellow-100 mb-4 flex items-center justify-between">
                 <div className="text-sm">Please log in with Spotify first from the sidebar to generate playlists.</div>
                 <div className="flex items-center gap-2">
-                  <button onClick={() => setDrawerOpen(true)} className="md:hidden px-3 py-1 rounded bg-yellow-600 text-black text-sm">Open sidebar</button>
+                  <button onClick={() => setDrawerOpen(true)} className="md:hidden px-2 py-0.5 rounded bg-yellow-600 text-black text-xs">Open sidebar</button>
                   <span className="hidden md:inline text-xs muted">Open the sidebar at left to sign in.</span>
                 </div>
               </div>
