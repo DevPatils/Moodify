@@ -1,7 +1,118 @@
 
+@import url('https://fonts.googleapis.com/css2?family=Karantina:wght@300;400;700&family=Outfit:wght@300;400;600;700;800&display=swap');
 @import "tailwindcss";
 
-@theme {
+:root {
+  --font-karantina: 'Karantina', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --font-outfit: 'Outfit', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   --color-ebonyclay: #25273A;
   --color-brand: #00C853; /* you can add more */
 }
+
+/* make Outfit the default app font */
+body {
+  font-family: var(--font-outfit);
+}
+
+/* subtle page background */
+body {
+  background: radial-gradient(1200px 600px at 10% 10%, rgba(6,6,6,0.6), rgba(0,0,0,1) 40%), #000;
+}
+
+/* Themed scrollbar for WebKit (Chrome, Edge, Safari) */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0f1114; /* track matches updated (lighter) sidebar background */
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #2d3748, #1f2937); /* subtle dark gradient */
+  border-radius: 8px;
+  border: 2px solid #0b0b0b; /* matches surrounding background */
+}
+
+/* Firefox scrollbar theming */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #2d3748 #0f1114; /* thumb, track */
+}
+
+/* Utility: make scrollbars visible on overflow elements consistently */
+.scrollbar-themed::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #2d3748, #1f2937);
+}
+
+/* Small keyframe animations used by components */
+@keyframes cardEnter {
+  0% { opacity: 0; transform: translateY(8px) scale(0.995); }
+  60% { opacity: 1; transform: translateY(-2px) scale(1.002); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes pop {
+  0% { transform: scale(0.995); }
+  60% { transform: scale(1.006); }
+  100% { transform: scale(1); }
+}
+
+.animate-card-enter { animation: cardEnter 600ms cubic-bezier(.2,.9,.2,1) both; }
+.animate-pop { animation: pop 420ms ease-out both; }
+
+.typewriter-cursor {
+  display: inline-block;
+  margin-left: 4px;
+  color: #00e676;
+  opacity: 1;
+  animation: blink 1s steps(2,start) infinite;
+}
+
+@keyframes blink {
+  to { opacity: 0; }
+}
+
+.emoji-gap { margin-left: 8px; }
+
+/* Glass card utility for cleaner modern look */
+.glass-card {
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-radius: 1rem;
+  box-shadow: 0 10px 30px rgba(2,6,23,0.6);
+  border: 1px solid rgba(255,255,255,0.04);
+}
+
+.muted { color: #9ca3af; }
+.accent { color: var(--color-brand); }
+
+.btn-accent {
+  background: linear-gradient(90deg, #00e5a8, #00c853);
+  color: #000;
+}
+
+.karantina-light {
+  font-family: var(--font-karantina);
+  font-weight: 300;
+  font-style: normal;
+}
+
+.karantina-regular {
+  font-family: var(--font-karantina);
+  font-weight: 400;
+  font-style: normal;
+}
+
+.karantina-bold {
+  font-family: var(--font-karantina);
+  font-weight: 700;
+  font-style: normal;
+}
+
+/* Outfit utility: use this class wherever you want the Outfit family explicitly */
+.font-outfit {
+  font-family: var(--font-outfit);
+} 
