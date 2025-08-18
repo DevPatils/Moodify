@@ -8,7 +8,7 @@ export default function Moodify() {
   const [popupOpen, setPopupOpen] = useState(false);
   const [popupPlaylist, setPopupPlaylist] = useState<{ id: string; name?: string; url?: string } | null>(null);
   const [copied, setCopied] = useState(false);
-
+const base = import.meta.env.VITE_BASE_URL;
   const { replacePlaylists } = usePlaylists();
 
   const handleGenerate = async () => {
@@ -27,7 +27,7 @@ export default function Moodify() {
     setError(null);
 
     try {
-      const res = await fetch("http://localhost:5000/ai/generatePlaylist", {
+      const res = await fetch(`${base}/ai/generatePlaylist`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

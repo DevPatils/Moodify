@@ -1,8 +1,10 @@
 import React from "react";
 import { useEffect, useState } from "react";
+
+const base = import.meta.env.VITE_BASE_URL;
 const LoginButton: React.FC = () => {
   const handleLogin = () => {
-    window.location.href = "http://127.0.0.1:5000/login"; // backend auth route
+    window.location.href = `${base}/login`; // backend auth route
   };
   const [token, setToken] = useState<string | null>(null);
   console.log(token);
