@@ -1,10 +1,9 @@
-import React, { useState } from 'react';
+import React from 'react';
 import Sidebar from '../components/SideBar';
 import MoodInput from '../components/MoodInput';
 import Typewriter from '../components/Typewriter';
 
 const PromptPage: React.FC = () => {
-  const [drawerOpen, setDrawerOpen] = useState(false);
   const isLoggedIn = typeof window !== 'undefined' && !!localStorage.getItem('spotify_token');
 
   return (
@@ -14,14 +13,7 @@ const PromptPage: React.FC = () => {
         <Sidebar />
       </div>
 
-      {/* Mobile top bar with hamburger */}
-      <div className="md:hidden fixed top-4 left-4 z-40">
-        <button aria-label="Open sidebar" onClick={() => setDrawerOpen(true)} className="p-1 rounded-md bg-gray-900/60 backdrop-blur-sm drop-shadow-md">
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-          </svg>
-        </button>
-      </div>
+  {/* Mobile sidebar controls removed */}
 
       {/* Right content - stacked vertically */}
       <div className="flex-1 flex items-center justify-center p-4 md:p-8">
@@ -44,7 +36,6 @@ const PromptPage: React.FC = () => {
               <div className="w-full max-w-3xl py-3 px-4 rounded-md bg-yellow-900/10 border border-yellow-800 text-yellow-100 mb-4 flex items-center justify-between">
                 <div className="text-sm">Please log in with Spotify first from the sidebar to generate playlists.</div>
                 <div className="flex items-center gap-2">
-                  <button onClick={() => setDrawerOpen(true)} className="md:hidden px-2 py-0.5 rounded bg-yellow-600 text-black text-xs">Open sidebar</button>
                   <span className="hidden md:inline text-xs muted">Open the sidebar at left to sign in.</span>
                 </div>
               </div>
@@ -57,20 +48,7 @@ const PromptPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Mobile drawer overlay */}
-      {drawerOpen && (
-        <div className="md:hidden fixed inset-0 z-50 flex">
-          <div className="fixed inset-0 bg-black/60" onClick={() => setDrawerOpen(false)} />
-          <div className="relative w-72 sm:w-80 bg-[#070708] p-4">
-            <div className="flex justify-end">
-              <button onClick={() => setDrawerOpen(false)} className="p-2">
-                ✕
-              </button>
-            </div>
-            <Sidebar className="w-72 sm:w-80" />
-          </div>
-        </div>
-      )}
+  {/* Mobile drawer removed */}
     </div>
   );
 };
